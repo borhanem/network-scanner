@@ -1,3 +1,9 @@
 *.swp
 
 netscan
+
+utils.o
+
+scanner.o
+
+main.o

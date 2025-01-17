@@ -7,7 +7,7 @@ int main(int argc,char** argv){
         printf("Usage <host or subnet address>\n");
         exit(-1);
     }
-    switch (addr_type(argv[1]))
+    switch (addr_type(&argv[1]))
     {
     case 0:
         printf("Invalid address\n");
