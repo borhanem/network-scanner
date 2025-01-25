@@ -1,50 +1,79 @@
 #include "utils.h"
 
-int addr_type(char **addr){
-    if(check_addr_format(addr)){
+int addr_type(const char *addr)
+{
+    if (check_addr_format(addr))
+    {
         return 1;
-    }else if(check_cidr_format(addr)){
+    }
+    else if (check_cidr_format(addr))
+    {
         return 2;
-    }else{
+    }
+    else
+    {
         return 0;
     }
 }
 
-int check_addr_format(char **addr)
+int check_addr_format(const char *ip)
 {
-    int values[4];
-    if (sscanf(*addr, "%d.%d.%d.%d", &values[0], &values[1], &values[2], &values[3]) != 4)
-    {
+    int num, dots = 0;
+    char *endptr;
+
+    if (ip == NULL || strlen(ip) == 0)
         return 0;
-    }
-    for (size_t i = 0; i < 4; i++)
+
+    char *ipCopy = strdup(ip);
+    char *ptr = strtok(ipCopy, ".");
+    while (ptr)
     {
-        if (values[i] < 0 || 255 < values[i])
+        if (!isdigit(*ptr) || (num = strtol(ptr, &endptr, 10), *endptr != '\0'))
         {
+            free(ipCopy);
             return 0;
         }
+        if (num < 0 || num > 255)
+        {
+            free(ipCopy);
+            return 0;
+        }
+        ptr = strtok(NULL, ".");
+        dots++;
     }
-    return 1;
+    free(ipCopy);
+    return dots == 4;
 }
 
-int check_cidr_format(char **addr)
+int check_cidr_format(const char *addr)
 {
-    int values[4];
-    int subnet;
-    if (sscanf(*addr, "%d.%d.%d.%d/%d", &values[0], &values[1], &values[2], &values[3], &subnet) != 5)
+    char ip[IP_ADDR_LENGTH];
+    int prefix;
+    char buffer[1024];
+
+    if (sscanf(addr, "%15[^/]/%d%s", ip, &prefix, buffer) != 2)
     {
         return 0;
     }
-    else if (subnet <= 0 || subnet <= 32)
+
+    if (prefix < 0 || prefix > 32)
     {
         return 0;
     }
-    for (size_t i = 0; i < 4; i++)
+
+    int octets[4];
+    if (sscanf(ip, "%d.%d.%d.%d", &octets[0], &octets[1], &octets[2], &octets[3]) != 4)
     {
-        if (values[i] < 0 || 255 < values[i])
+        return 0;
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (octets[i] < 0 || octets[i] > 255)
         {
             return 0;
         }
     }
+
     return 1;
 }

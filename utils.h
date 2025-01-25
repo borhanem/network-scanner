@@ -3,11 +3,16 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
-int addr_type(char **addr);
+#define IP_ADDR_LENGTH 16
+#define MAX_STR_BUFF 1024
 
-int check_addr_format(char **addr);
+int addr_type(const char *addr);
 
-int check_cidr_format(char **addr);
+int check_addr_format(const char *ip);
 
-#endif //UTILS_H_
+int check_cidr_format(const char *addr);
+
+#endif // UTILS_H_
